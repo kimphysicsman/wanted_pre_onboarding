@@ -10,7 +10,7 @@
 
 ## 1. Structure
 
-> wanted\*pre*onboarding *(main)\_
+> wanted_pre_onboarding _(main)_
 >
 > > ㄴ user _(사용자 기능)_  
 > > ㄴ company _(회사 기능)_  

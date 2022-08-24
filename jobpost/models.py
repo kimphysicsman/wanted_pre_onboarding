@@ -1,4 +1,5 @@
 from django.db import models
+import jobpost
 from user.models import User
 from company.models import Company
 
@@ -35,3 +36,10 @@ class JobPost(models.Model):
 class JobPostSkillSet(models.Model):
     skillset = models.ForeignKey(SkillSet, on_delete=models.SET_NULL, null=True)
     jobpost = models.ForeignKey(JobPost, on_delete=models.SET_NULL, null=True)
+
+
+# 채용공고 지원 모델
+class Apply(models.Model):
+    user = models.OneToOneField(User, verbose_name="지원자", on_delete=models.SET_NULL, null=True)
+    jobpost = models.OneToOneField(JobPost, verbose_name="채용공고", on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField("지원 시간", auto_now_add=True)

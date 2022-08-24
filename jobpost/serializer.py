@@ -50,3 +50,10 @@ class JobPostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.JobPost
         fields = ('id', 'company', 'skillset', 'jobposition', 'salary', 'area', 'country', 'content', 'other_jobpost')
+
+
+# 채용공고 지원 serializer
+class ApplySerializer(serializers.ModelSerializer):
+      class Meta:
+        model = models.Apply
+        fields = ('user', 'jobpost', 'created_at')

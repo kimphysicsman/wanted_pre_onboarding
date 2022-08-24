@@ -1,16 +1,14 @@
 from django.shortcuts import render
 from django.db.models.query_utils import Q
+from django.db.models import CharField
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status
-import company
-
-import jobpost
 
 from company.models import Company
 from .models import JobPost, JobPosition, SkillSet, JobPostSkillSet
-from .serializer import JobPostSerializer, JobPostDetailSerializer
+from .serializer import JobPostSerializer, JobPostDetailSerializer, ApplySerializer
 
 
 # 채용공고 CRUD 기능
@@ -118,3 +116,35 @@ class JobPostDetailView(APIView):
             return Response({"error": "채용공고가 존재하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(JobPostDetailSerializer(jobpost_obj).data, status=status.HTTP_200_OK)
+
+# 채용공고 검색 기능
+class JobPostSearchView(APIView):
+    # 채용공고 검색
+    def get(self, request):
+        # 검색 단어
+        search_word = request.GET.get('search', '')
+
+        query = Q()
+        query.add(Q(content__contains=search_word), Q.OR)
+        query.add(Q(area__contains=search_word), Q.OR)
+        query.add(Q(country__contains=search_word), Q.OR)
+        query.add(Q(company__name__contains=search_word), Q.OR)
+        query.add(Q(jobposition__name__contains=search_word), Q.OR)
+        query.add(Q(skillset__name__contains=search_word), Q.OR)
+
+        jobpost_search_list = JobPost.objects.filter(query)
+        
+        return Response(JobPostSerializer(jobpost_search_list, many=True).data, status=status.HTTP_200_OK)
+
+# 채용공고 지원 기능
+class ApplyView(APIView):
+    # 채용공고 지원
+    def post(self, request):
+        apply_serializer = ApplySerializer(data=request.data)
+
+        if apply_serializer.is_valid():
+            apply_serializer.save()
+            return Response(apply_serializer.data, status=status.HTTP_200_OK)
+
+        return Response(apply_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
